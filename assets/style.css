@@ -463,7 +463,7 @@ code { font-family: var(--mono); }
 /* ---------- 7. Hero ---------- */
 .hero {
   position: relative;
-  padding: calc(var(--hdr-h) + 84px) 0 0;
+  padding: calc(var(--hdr-h) + 56px) 0 0;
   z-index: 2;
   overflow: hidden;
 }
@@ -758,7 +758,7 @@ code { font-family: var(--mono); }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1px;
-  margin-top: 84px;
+  margin-top: 38px;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius);
   background: var(--line-soft);
@@ -767,7 +767,7 @@ code { font-family: var(--mono); }
 
 .stat {
   background: var(--panel);
-  padding: 26px 24px;
+  padding: 22px 24px;
   display: flex;
   flex-direction: column;
   gap: 4px;
