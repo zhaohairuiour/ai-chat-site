@@ -1493,12 +1493,14 @@ code { font-family: var(--mono); }
   background: #0e0e13;
 }
 
-.code-path { font-family: var(--mono); font-size: 10.5px; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.code-path { font-family: var(--mono); font-size: 10.5px; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
 .path-dim { color: var(--muted-2); }
 
 .copy-btn {
   display: inline-flex;
   align-items: center;
+  flex: none;
+  white-space: nowrap;
   gap: 5px;
   height: 26px;
   padding: 0 9px;
@@ -1898,7 +1900,12 @@ code { font-family: var(--mono); }
   .arch-node .node-main strong { font-size: 12.5px; }
   .arch-node .node-main small { font-size: 9.5px; }
   .code-view { max-height: 380px; font-size: 11.2px; }
-  .code-view .ln { width: 34px; }
+  .code-view .ln { width: 34px; padding-right: 8px; }
+  .code-view .cc { white-space: pre-wrap; overflow-wrap: anywhere; padding-right: 12px; }
+  .code-sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
+  .code-tab { width: auto; }
+  .code-foot > span { display: none; }
+  .code-foot { justify-content: flex-end; }
   .timeline .tl-item { grid-template-columns: 22px 1fr; gap: 12px; }
   .download-card { padding: 24px 20px; }
   .download-actions .btn { flex: 1; }
