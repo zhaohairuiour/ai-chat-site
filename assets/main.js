@@ -21,7 +21,12 @@
 
   const REPO = 'zhaohairuiour/ai-chat-app';
   const BRANCH = 'main';
-  const RELEASES_LATEST = `https://github.com/${REPO}/releases/latest`;
+  const APK_FALLBACK = `https://github.com/${REPO}/releases/download/v3.32.101/ai-chat-app-v3.32.101-nokeys.apk`;
+  const APK_MIRRORS = [
+    { id: 'net', name: 'ghproxy.net', prefix: 'https://ghproxy.net/' },
+    { id: 'com', name: 'gh-proxy.com', prefix: 'https://gh-proxy.com/' }
+  ];
+  let apkTarget = APK_FALLBACK;
   const MANIFEST_MIRRORS = [
     `https://ghproxy.net/https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`,
     `https://gh-proxy.com/https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`,
@@ -931,7 +936,7 @@ pb.environment().put("TERM", "xterm-256color");`
       const lines = newer
         ? [
             `当前 build ${cur.code} → 远端 build ${newCode}`,
-            `apkUrl: ${manifest.apkUrl}`,
+            `apkUrl（镜像）: ${APK_MIRRORS[0].prefix}${manifest.apkUrl}`,
             manifest.notes ? `说明：${manifest.notes}` : ''
           ]
         : [
@@ -1067,8 +1072,8 @@ pb.environment().put("TERM", "xterm-256color");`
     downloading = true;
     updDownload.disabled = true;
     dlSim?.classList.add('is-active');
-    if (dlLabel) dlLabel.textContent = '下载 app-update.apk';
-    if (dlFoot) dlFoot.textContent = '正在经镜像前缀下载…';
+    if (dlLabel) dlLabel.textContent = 'ghproxy.net · app-update.apk';
+    if (dlFoot) dlFoot.textContent = '正在经 ghproxy.net 镜像前缀下载…';
 
     const sizeMB = 264.9;
     const dur = 3600;
@@ -1090,7 +1095,7 @@ pb.environment().put("TERM", "xterm-256color");`
 
       downloading = false;
       if (dlLabel) dlLabel.textContent = '下载完成';
-      if (dlFoot) dlFoot.textContent = '已通过 FileProvider 拉起系统安装器（演示）';
+      if (dlFoot) dlFoot.textContent = '已通过 ghproxy.net 镜像下载，FileProvider 拉起安装器（演示）';
       if (updDownload) {
         updDownload.disabled = false;
         updDownload.innerHTML =
@@ -1119,11 +1124,17 @@ pb.environment().put("TERM", "xterm-256color");`
       if (phoneVer) phoneVer.textContent = name;
       const specVersion = $('#specVersion');
       if (specVersion) specVersion.textContent = name;
+      const dlVer = $('#dlVer');
+      if (dlVer) dlVer.textContent = name;
     }
     if (code) {
       const specBuild = $('#specBuild');
       if (specBuild) specBuild.textContent = code;
+      const dlBuild = $('#dlBuild');
+      if (dlBuild) dlBuild.textContent = code;
     }
+
+    if (manifest.apkUrl) setApkTarget(String(manifest.apkUrl));
 
     if (updCurrent && code) {
       const exists = Array.from(updCurrent.options).some((o) => Number(o.value) === Number(code));
@@ -1489,9 +1500,75 @@ async function checkAppUpdate(silent) {
     }
   });
 
-  /* ---------- 18. 下载入口 ---------- */
-  ['#hdrDownload', '#heroDownload', '#finalDownload'].forEach((sel) => {
-    const el = $(sel);
-    if (el) el.href = RELEASES_LATEST;
+  /* ---------- 18. 镜像下载弹窗 ---------- */
+  function mirrorHref(prefix, target = apkTarget) {
+    return target ? `${prefix}${target}` : '#';
+  }
+
+  function setApkTarget(url) {
+    if (!url || !/^https:\/\/github\.com\/\S+\/releases\/download\/\S+\.apk$/i.test(url)) return;
+    apkTarget = url;
+
+    $$('[data-dl-mirror]').forEach((link) => {
+      const mirror = APK_MIRRORS.find((m) => m.id === link.dataset.dlMirror);
+      if (mirror) link.href = mirrorHref(mirror.prefix);
+    });
+    $$('[data-dl-open]').forEach((link) => {
+      link.href = mirrorHref(APK_MIRRORS[0].prefix);
+    });
+  }
+
+  const dlModal = $('#dlModal');
+  const dlPanel = $('.dl-modal-panel', dlModal || document);
+  let dlLastFocus = null;
+
+  function openDlModal(opener) {
+    if (!dlModal) return;
+    dlLastFocus = opener || document.activeElement;
+    dlModal.classList.add('is-open');
+    dlModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('dl-lock');
+    setTimeout(() => dlPanel?.focus({ preventScroll: true }), 60);
+  }
+
+  function closeDlModal() {
+    if (!dlModal) return;
+    dlModal.classList.remove('is-open');
+    dlModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('dl-lock');
+    if (dlLastFocus && typeof dlLastFocus.focus === 'function') {
+      dlLastFocus.focus({ preventScroll: true });
+    }
+  }
+
+  $$('[data-dl-open]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      if (!dlModal) return;
+      e.preventDefault();
+      openDlModal(link);
+    });
+  });
+
+  $('#dlClose')?.addEventListener('click', closeDlModal);
+
+  dlModal?.addEventListener('click', (e) => {
+    if (e.target.closest('[data-dl-close]')) closeDlModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && dlModal?.classList.contains('is-open')) {
+      e.preventDefault();
+      closeDlModal();
+    }
+  });
+
+  $$('[data-dl-mirror]').forEach((link) => {
+    link.addEventListener('click', () => {
+      const name = link.dataset.dlName || '镜像';
+      setTimeout(() => {
+        closeDlModal();
+        toast(`正在通过 ${name} 镜像下载 APK`, 'success', 3200);
+      }, 80);
+    });
   });
 })();
