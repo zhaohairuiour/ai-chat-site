@@ -12,7 +12,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0b0e'/%3E%3Cpath d='M8 10l6 6-6 6' stroke='%234d6bfe' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M16 22h8' stroke='%23ececef' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icon.svg" />
-  <link rel="stylesheet" href="assets/style.css?v=1.1.0" />
+  <link rel="stylesheet" href="assets/style.css?v=1.1.1" />
 </head>
 <body>
 
@@ -758,7 +758,7 @@
       <a href="https://raw.githubusercontent.com/zhaohairuiour/ai-chat-app/main/version.json" target="_blank" rel="noopener">version.json</a>
       <a href="https://github.com/zhaohairuiour/ai-chat-site" target="_blank" rel="noopener">本站源码</a>
     </nav>
-    <p class="footer-meta">静态站点 v1.1.0 · GitHub Pages · 原生 JS，无框架无构建</p>
+    <p class="footer-meta">静态站点 v1.1.1 · GitHub Pages · 原生 JS，无框架无构建</p>
   </div>
 </footer>
 
@@ -774,14 +774,14 @@
 <!-- ==================== 下载镜像选择 ==================== -->
 <div class="dl-modal" id="dlModal" aria-hidden="true">
   <div class="dl-modal-backdrop" data-dl-close></div>
-  <div class="dl-modal-panel" role="dialog" aria-modal="true" aria-labelledby="dlTitle" tabindex="-1">
+  <div class="dl-modal-panel" role="dialog" aria-modal="true" aria-labelledby="dlTitle" aria-describedby="dlDesc" tabindex="-1">
     <button class="dl-modal-close" id="dlClose" aria-label="关闭下载镜像选择">
       <svg class="ic" aria-hidden="true"><use href="#i-close"/></svg>
     </button>
 
     <p class="dl-modal-kicker">APK · arm64-v8a · 277,788,141 字节</p>
     <h3 id="dlTitle">选择下载镜像</h3>
-    <p class="dl-modal-desc">两个地址指向同一个 Release 附件，均走 GitHub 镜像，不经过 GitHub 原站。哪个快用哪个。</p>
+    <p class="dl-modal-desc" id="dlDesc">两个地址指向同一个 Release 附件，均走 GitHub 镜像，不经过 GitHub 原站。哪个快用哪个。</p>
 
     <div class="dl-mirrors">
       <a class="dl-mirror is-primary" data-dl-mirror="net" data-dl-name="ghproxy.net"
@@ -822,6 +822,6 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="assets/main.js?v=1.1.0" defer></script>
+<script src="assets/main.js?v=1.1.1" defer></script>
 </body>
 </html>

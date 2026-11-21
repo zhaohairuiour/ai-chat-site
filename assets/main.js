@@ -1562,6 +1562,23 @@ async function checkAppUpdate(silent) {
     }
   });
 
+  dlModal?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || !dlPanel) return;
+    const items = $$('a[href], button:not([disabled])', dlPanel);
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    const current = document.activeElement;
+
+    if (e.shiftKey && (current === first || current === dlPanel)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && current === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
   $$('[data-dl-mirror]').forEach((link) => {
     link.addEventListener('click', () => {
       const name = link.dataset.dlName || '镜像';
