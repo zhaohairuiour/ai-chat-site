@@ -1,0 +1,19 @@
+{
+  "name": "AI Chat for Android",
+  "short_name": "AI Chat",
+  "description": "内置 Termux 沙箱与 OpenClaw 运行时的安卓 AI 工作台。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08080a",
+  "theme_color": "#08080a",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

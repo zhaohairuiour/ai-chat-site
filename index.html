@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>AI Chat for Android — 把一整台 Linux 装进聊天框</title>
+  <meta name="description" content="AI Chat 是安卓端 AI 对话客户端：内置 Termux 沙箱、Node.js 与 OpenClaw 运行时，支持终端、项目式编程、多模型接入与镜像源自动更新。" />
+  <meta name="theme-color" content="#08080a" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="AI Chat for Android" />
+  <meta property="og:description" content="内置 Termux 沙箱与 OpenClaw 运行时的安卓 AI 工作台。终端、项目、模型、更新全部离线可控。" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0b0e'/%3E%3Cpath d='M8 10l6 6-6 6' stroke='%234d6bfe' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M16 22h8' stroke='%23ececef' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="assets/icon.svg" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+<!-- ==================== 全局装饰层 ==================== -->
+<canvas id="bgCanvas" aria-hidden="true"></canvas>
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+<div class="scroll-progress" aria-hidden="true"><i id="scrollBar"></i></div>
+
+<!-- ==================== SVG 图标库 ==================== -->
+<svg class="svg-sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-term" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9l3.5 3L7 15"/><path d="M13 15h4"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/><rect x="10" y="10" width="4" height="4" rx="1"/></symbol>
+  <symbol id="i-branch" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7v10"/><path d="M6 12h6a6 6 0 006-5"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/><path d="M3 17l9 5 9-5"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 10-2.6 6.4"/><path d="M21 3v6h-6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.4-3 8-7 9-4-1-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-8 8"/><rect x="4" y="8" width="12" height="12" rx="2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h6L10 22l9-12h-6l0-8z"/></symbol>
+</svg>
+
+<!-- ==================== 顶栏 ==================== -->
+<header class="hdr" id="hdr">
+  <div class="hdr-inner wrap">
+    <a class="brand" href="#hero" aria-label="回到顶部">
+      <span class="brand-mark">
+        <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
+          <rect width="32" height="32" rx="9" fill="#101014"/>
+          <path d="M9 11l5 5-5 5" stroke="#4d6bfe" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 21h7" stroke="#ececef" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-text">AI Chat<small>for Android</small></span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="主导航">
+      <a href="#capabilities" class="nav-link" data-nav="capabilities">能力</a>
+      <a href="#terminal" class="nav-link" data-nav="terminal">终端</a>
+      <a href="#architecture" class="nav-link" data-nav="architecture">架构</a>
+      <a href="#updater" class="nav-link" data-nav="updater">更新</a>
+      <a href="#code" class="nav-link" data-nav="code">源码</a>
+      <a href="#versions" class="nav-link" data-nav="versions">版本</a>
+      <a href="#faq" class="nav-link" data-nav="faq">问答</a>
+      <a href="https://github.com/zhaohairuiour/ai-chat-app/releases/latest" class="nav-link nav-cta" target="_blank" rel="noopener">下载 APK</a>
+    </nav>
+
+    <div class="hdr-actions">
+      <span class="ver-pill" id="verPill" title="当前最新版本">
+        <span class="ver-dot"></span><span id="verPillText">v3.32.101</span>
+      </span>
+      <a class="btn btn-quiet hide-sm" href="https://github.com/zhaohairuiour/ai-chat-app" target="_blank" rel="noopener">
+        GitHub
+        <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
+      </a>
+      <a class="btn btn-primary hide-sm" id="hdrDownload"
+         href="https://github.com/zhaohairuiour/ai-chat-app/releases/latest" target="_blank" rel="noopener">
+        下载 APK
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-label="打开导航" aria-expanded="false" aria-controls="nav">
+        <svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="nav-scrim" id="navScrim" aria-hidden="true"></div>
+
+<main>
+<!-- ==================== 视图：Hero ==================== -->
+<section class="hero" id="hero">
+  <div class="hero-grid-bg" aria-hidden="true"></div>
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow reveal">
+        <span class="pulse-dot"></span>
+        ANDROID · CAPACITOR · TERMUX · OPENCLAW
+      </p>
+      <h1 class="reveal" style="--d:.05s">
+        把一整台 <span class="accent">Linux</span><br />
+        装进聊天框
+      </h1>
+      <p class="lede reveal" style="--d:.12s">
+        一个 265 MB 的安装包，里面装着 Termux 沙箱、Node.js 运行时与 OpenClaw 智能体。
+        聊天、终端、项目文件树、模型切换，全部在设备本地跑完。
+      </p>
+      <div class="hero-cta reveal" style="--d:.18s">
+        <a class="btn btn-primary btn-lg" id="heroDownload"
+           href="https://github.com/zhaohairuiour/ai-chat-app/releases/latest" target="_blank" rel="noopener">
+          <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
+          下载最新版
+          <span class="btn-tag" id="heroVer">v3.32.101</span>
+        </a>
+        <a class="btn btn-outline btn-lg" href="https://github.com/zhaohairuiour/ai-chat-app" target="_blank" rel="noopener">
+          浏览源码
+          <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg>
+        </a>
+      </div>
+      <dl class="hero-facts reveal" style="--d:.24s">
+        <div><dt>安装包</dt><dd>264.9 MB</dd></div>
+        <div><dt>最低系统</dt><dd>Android 7.0</dd></div>
+        <div><dt>明文密钥</dt><dd>0</dd></div>
+      </dl>
+    </div>
+
+    <div class="hero-visual reveal" style="--d:.1s">
+      <div class="phone" id="phone">
+        <div class="phone-glow" aria-hidden="true"></div>
+        <div class="phone-frame">
+          <div class="phone-notch" aria-hidden="true"></div>
+          <div class="phone-screen">
+            <div class="app-bar">
+              <span class="app-brand"><i></i>AI Chat</span>
+              <span class="app-ver" id="phoneVer">3.32.101</span>
+            </div>
+            <div class="chat-stream">
+              <div class="bubble user">openclaw 输出怎么是竖排乱码？</div>
+              <div class="bubble bot">
+                <span class="bot-line">已定位：<code>TERM=xterm-256color</code> 诱导 CLI 输出 SGR 序列。</span>
+                <span class="bot-line">行级桥接解释不了光标定位，序列漏网后被逐字拆开。</span>
+                <span class="bot-status"><span class="pulse-dot"></span>修复补丁已应用</span>
+              </div>
+            </div>
+            <div class="mini-term">
+              <div class="mini-term-head">
+                <span class="dots"><i></i><i></i><i></i></span>
+                <span class="mini-term-title">terminal</span>
+                <span class="mini-term-badge" id="miniTermState">ready</span>
+              </div>
+              <div class="mini-term-body" id="miniTermBody" aria-live="polite"></div>
+            </div>
+            <div class="app-dock" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="float-chip fc-1">TERMUX</span>
+      <span class="float-chip fc-2">NODE 22</span>
+      <span class="float-chip fc-3">OPENCLAW</span>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="stat-strip reveal" style="--d:.3s">
+      <div class="stat">
+        <span class="stat-num" data-count="455" data-plain="1">0</span>
+        <span class="stat-label">build 号</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count="4">0</span>
+        <span class="stat-label">模型供应商</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count="3">0</span>
+        <span class="stat-label">镜像回退层级</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" data-count="0">0</span>
+        <span class="stat-label">内置明文密钥</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 视图：能力 ==================== -->
+<section class="section" id="capabilities">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="sec-kicker reveal"><span>01</span> 能力</p>
+      <h2 class="reveal" style="--d:.04s">不止聊天，是一台可编程终端</h2>
+      <p class="sec-desc reveal" style="--d:.08s">
+        外壳是 WebView，内核是真正的 POSIX 环境。六个能力互相咬合，构成一条从对话到执行的完整链路。
+      </p>
+    </header>
+
+    <div class="feature-grid">
+      <article class="feature reveal tilt" data-code="exec">
+        <div class="feature-top">
+          <span class="feature-icon"><svg class="ic" aria-hidden="true"><use href="#i-term"/></svg></span>
+          <span class="feature-idx">F/01</span>
+        </div>
+        <h3>原生沙箱终端</h3>
+        <p>内嵌 Termux bootstrap，<code>bash</code>、<code>apt</code>、<code>pkg</code> 直接可用。交互命令走伪终端，<code>y/n</code> 能在输入框里作答。</p>
+        <ul class="feature-tags"><li>bash</li><li>apt / pkg</li><li>pty</li></ul>
+        <span class="feature-arrow"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </article>
+
+      <article class="feature reveal tilt" data-code="exec" style="--d:.05s">
+        <div class="feature-top">
+          <span class="feature-icon"><svg class="ic" aria-hidden="true"><use href="#i-cpu"/></svg></span>
+          <span class="feature-idx">F/02</span>
+        </div>
+        <h3>OpenClaw 运行时</h3>
+        <p>46 MB 的 Android 原生 <code>node</code> 二进制与 <code>openclaw.mjs</code> 随包分发，首次启动自动写入 wrapper，无需联网安装。</p>
+        <ul class="feature-tags"><li>node 22</li><li>openclaw.mjs</li><li>offline</li></ul>
+        <span class="feature-arrow"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </article>
+
+      <article class="feature reveal tilt" data-code="ansi" style="--d:.1s">
+        <div class="feature-top">
+          <span class="feature-icon"><svg class="ic" aria-hidden="true"><use href="#i-branch"/></svg></span>
+          <span class="feature-idx">F/03</span>
+        </div>
+        <h3>纯文本终端桥</h3>
+        <p>行级 ANSI 状态机跨块保留 CSI/OSC 状态，按完整 UTF-8 边界解码，再对漏网控制序列做二次剥离。</p>
+        <ul class="feature-tags"><li>CSI FSM</li><li>UTF-8</li><li>sanitize</li></ul>
+        <span class="feature-arrow"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </article>
+
+      <article class="feature reveal tilt" data-code="updater" style="--d:.15s">
+        <div class="feature-top">
+          <span class="feature-icon"><svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg></span>
+          <span class="feature-idx">F/04</span>
+        </div>
+        <h3>多模型接入</h3>
+        <p>智谱 GLM、Poixe、OpenRouter、Agnes 四路 provider，按免费模型优先排序，失败自动切下一路。</p>
+        <ul class="feature-tags"><li>GLM</li><li>OpenRouter</li><li>failover</li></ul>
+        <span class="feature-arrow"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </article>
+
+      <article class="feature reveal tilt" data-code="updater" style="--d:.2s">
+        <div class="feature-top">
+          <span class="feature-icon"><svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg></span>
+          <span class="feature-idx">F/05</span>
+        </div>
+        <h3>镜像源自更新</h3>
+        <p>启动静默检查 <code>version.json</code>，按 versionCode 数值比对；下载与清单都走镜像前缀，失败逐级回退到直连。</p>
+        <ul class="feature-tags"><li>manifest</li><li>mirror</li><li>FileProvider</li></ul>
+        <span class="feature-arrow"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </article>
+
+      <article class="feature reveal tilt" data-code="ansi" style="--d:.25s">
+        <div class="feature-top">
+          <span class="feature-icon"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span>
+          <span class="feature-idx">F/06</span>
+        </div>
+        <h3>本地优先与去密钥</h3>
+        <p>会话与文件存在设备侧，发布包内 Key 常量为空；本地数据使用设备首次运行随机生成的密钥加密。</p>
+        <ul class="feature-tags"><li>local-first</li><li>AES</li><li>no secrets</li></ul>
+        <span class="feature-arrow"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 视图：终端 ==================== -->
+<section class="section section-alt" id="terminal">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="sec-kicker reveal"><span>02</span> 终端</p>
+      <h2 class="reveal" style="--d:.04s">逐字竖排的乱码，是怎么被拆掉的</h2>
+      <p class="sec-desc reveal" style="--d:.08s">
+        <code>openclaw doctor</code> 在 <code>xterm-256color</code> 下输出 SGR 颜色与光标定位序列。
+        WebView 桥接只有行模型，解释不了的序列漏到前端，ESC 字节一丢，剩下的 <code>[90m</code> 就被当成普通字符逐个换行。
+      </p>
+    </header>
+
+    <div class="term-layout">
+      <div class="term-notes">
+        <ol class="step-list">
+          <li class="reveal">
+            <span class="step-num">01</span>
+            <div>
+              <h3>让 CLI 退化为纯文本</h3>
+              <p>识别 <code>openclaw</code> 类命令，注入 <code>TERM=dumb</code>、<code>NO_COLOR=1</code>、<code>FORCE_COLOR=0</code>、<code>CI=1</code>，并前置 <code>--no-color</code>。其他命令仍保留 256 色。</p>
+            </div>
+          </li>
+          <li class="reveal" style="--d:.06s">
+            <span class="step-num">02</span>
+            <div>
+              <h3>按完整字符解码</h3>
+              <p>4096 字节读缓冲会在多字节字符中间切断。新增尾部不完整序列检测，把残缺字节留到下一块，EOF 再做兜底解码。</p>
+            </div>
+          </li>
+          <li class="reveal" style="--d:.12s">
+            <span class="step-num">03</span>
+            <div>
+              <h3>兜底剥离残留序列</h3>
+              <p>CSI 状态机跨块保存状态；<code>emitBuffer</code> 输出前再剥一层裸 CSI / OSC / 括号粘贴 / 光标序列与 C0 控制字节，前端 <code>stripTermAnsi</code> 做同套正则的二次清洗。</p>
+            </div>
+          </li>
+        </ol>
+
+        <aside class="callout reveal" style="--d:.18s">
+          <span class="callout-icon"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span>
+          <div>
+            <strong>为什么不是「换个字体」</strong>
+            <p>乱码不是字体缺字，而是控制序列被拆散后的语义丢失。修的是解码链路，不是渲染样式。</p>
+          </div>
+        </aside>
+      </div>
+
+      <div class="term-window reveal tilt" id="termWindow">
+        <div class="term-titlebar">
+          <span class="term-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="term-switch" role="tablist" aria-label="修复前后对比">
+            <button class="term-tab" data-mode="before" role="tab" aria-selected="false">修复前</button>
+            <button class="term-tab is-active" data-mode="after" role="tab" aria-selected="true">修复后</button>
+          </div>
+          <div class="term-tools">
+            <button class="icon-btn" id="termSpeedBtn" title="切换打字速度" aria-label="切换打字速度">1×</button>
+            <button class="icon-btn" id="termReplay" title="重播" aria-label="重播">
+              <svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg>
+            </button>
+          </div>
+        </div>
+        <pre class="term-body" id="termBody" aria-live="polite" aria-label="终端输出演示"></pre>
+        <div class="term-footer">
+          <span class="term-prompt" aria-hidden="true">$</span>
+          <div class="cmd-chips" id="cmdChips">
+            <button class="cmd-chip" data-cmd="openclaw doctor">openclaw doctor</button>
+            <button class="cmd-chip" data-cmd="openclaw --version">openclaw --version</button>
+            <button class="cmd-chip" data-cmd="node -v">node -v</button>
+          </div>
+          <span class="term-mode" id="termMode">演示输出 · 已去除控制序列</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 视图：架构 ==================== -->
+<section class="section" id="architecture">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="sec-kicker reveal"><span>03</span> 架构</p>
+      <h2 class="reveal" style="--d:.04s">六层链路，一条命令穿透到底</h2>
+      <p class="sec-desc reveal" style="--d:.08s">点选任意节点，查看该层的职责与关键实现。</p>
+    </header>
+
+    <div class="arch-layout">
+      <div class="arch-diagram reveal" id="archDiagram">
+        <div class="arch-rail" aria-hidden="true"><span class="rail-pulse"></span></div>
+
+        <button class="arch-node is-active" data-node="webview" aria-pressed="true">
+          <span class="node-icon"><svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg></span>
+          <span class="node-main"><strong>WebView UI</strong><small>聊天 / 终端 / 文件树</small></span>
+          <span class="node-index">L1</span>
+        </button>
+        <button class="arch-node" data-node="bridge" aria-pressed="false">
+          <span class="node-icon"><svg class="ic" aria-hidden="true"><use href="#i-branch"/></svg></span>
+          <span class="node-main"><strong>Capacitor Bridge</strong><small>registerPlugin('Sandbox')</small></span>
+          <span class="node-index">L2</span>
+        </button>
+        <button class="arch-node" data-node="plugin" aria-pressed="false">
+          <span class="node-icon"><svg class="ic" aria-hidden="true"><use href="#i-cpu"/></svg></span>
+          <span class="node-main"><strong>SandboxPlugin</strong><small>exec / 安装器 / 版本信息</small></span>
+          <span class="node-index">L3</span>
+        </button>
+        <button class="arch-node" data-node="termux" aria-pressed="false">
+          <span class="node-icon"><svg class="ic" aria-hidden="true"><use href="#i-term"/></svg></span>
+          <span class="node-main"><strong>Termux PREFIX</strong><small>bash · node · apt</small></span>
+          <span class="node-index">L4</span>
+        </button>
+        <button class="arch-node" data-node="claw" aria-pressed="false">
+          <span class="node-icon"><svg class="ic" aria-hidden="true"><use href="#i-bolt"/></svg></span>
+          <span class="node-main"><strong>OpenClaw CLI</strong><small>openclaw.mjs · agent run</small></span>
+          <span class="node-index">L5</span>
+        </button>
+        <button class="arch-node" data-node="model" aria-pressed="false">
+          <span class="node-icon"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg></span>
+          <span class="node-main"><strong>模型 Provider</strong><small>GLM · Poixe · OpenRouter · Agnes</small></span>
+          <span class="node-index">L6</span>
+        </button>
+
+        <div class="arch-legend">
+          <span><i class="lg-dot"></i>设备本地</span>
+          <span><i class="lg-dot lg-net"></i>网络出口</span>
+        </div>
+      </div>
+
+      <aside class="arch-detail reveal" id="archDetail" aria-live="polite">
+        <p class="arch-detail-kicker" id="archKicker">LAYER 01</p>
+        <h3 id="archTitle">WebView UI</h3>
+        <p class="arch-desc" id="archDesc">
+          Capacitor 把前端资源打包进 <code>assets/public</code>，会话、终端、文件树都在这一层渲染。
+        </p>
+        <ul class="arch-points" id="archPoints"></ul>
+        <div class="arch-code">
+          <div class="arch-code-head"><span id="archCodeFile">app.js</span><button class="mini-copy" id="archCopy" aria-label="复制代码"><svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <pre id="archCode"></pre>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 视图：更新 ==================== -->
+<section class="section section-alt" id="updater">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="sec-kicker reveal"><span>04</span> 更新</p>
+      <h2 class="reveal" style="--d:.04s">应用内更新，真的跑一遍给你看</h2>
+      <p class="sec-desc reveal" style="--d:.08s">
+        下面这个面板会真实请求仓库根目录的 <code>version.json</code>，按 ghproxy.net → gh-proxy.com → 直连的顺序回退，再按 versionCode 比对。
+      </p>
+    </header>
+
+    <div class="upd-layout">
+      <div class="upd-card reveal">
+        <div class="upd-head">
+          <span class="upd-title">更新检查器</span>
+          <span class="upd-live"><span class="pulse-dot"></span>LIVE</span>
+        </div>
+
+        <div class="upd-field">
+          <label for="updCurrent">模拟当前版本</label>
+          <div class="select-wrap">
+            <select id="updCurrent">
+              <option value="454">3.32.100 · build 454</option>
+              <option value="455">3.32.101 · build 455</option>
+            </select>
+            <svg class="ic select-caret" aria-hidden="true"><use href="#i-chevron"/></svg>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="updCheck">
+          <svg class="ic" aria-hidden="true"><use href="#i-refresh"/></svg>
+          检查更新
+        </button>
+
+        <ol class="mirror-list" id="mirrorList">
+          <li data-mirror="0">
+            <span class="mirror-name">ghproxy.net</span>
+            <span class="mirror-status" data-state="idle">待命</span>
+            <span class="mirror-ms">—</span>
+          </li>
+          <li data-mirror="1">
+            <span class="mirror-name">gh-proxy.com</span>
+            <span class="mirror-status" data-state="idle">待命</span>
+            <span class="mirror-ms">—</span>
+          </li>
+          <li data-mirror="2">
+            <span class="mirror-name">raw.githubusercontent</span>
+            <span class="mirror-status" data-state="idle">待命</span>
+            <span class="mirror-ms">—</span>
+          </li>
+        </ol>
+
+        <div class="upd-result" id="updResult" aria-live="polite">
+          <p class="upd-placeholder">点击「检查更新」开始请求清单。</p>
+        </div>
+      </div>
+
+      <div class="upd-card upd-preview reveal" style="--d:.06s">
+        <div class="upd-head">
+          <span class="upd-title">远端清单</span>
+          <button class="mini-copy" id="copyManifest" aria-label="复制清单">
+            <svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg>
+          </button>
+        </div>
+        <pre class="json-view" id="jsonView"><span class="json-empty">// waiting for response…</span></pre>
+
+        <div class="compare" id="compare">
+          <div class="compare-row">
+            <span class="compare-label">当前</span>
+            <span class="compare-value" id="cmpCurrent">—</span>
+          </div>
+          <div class="compare-row">
+            <span class="compare-label">最新</span>
+            <span class="compare-value" id="cmpLatest">—</span>
+          </div>
+          <div class="compare-bar"><i id="cmpBar"></i></div>
+          <p class="compare-note" id="cmpNote">等待比对</p>
+        </div>
+
+        <div class="dl-sim" id="dlSim">
+          <div class="dl-sim-head"><span id="dlLabel">下载进度</span><span id="dlPct">0%</span></div>
+          <div class="dl-track"><i id="dlFill"></i></div>
+          <p class="dl-foot" id="dlFoot">下载完成后由 FileProvider 拉起系统安装器。</p>
+        </div>
+
+        <button class="btn btn-outline btn-block" id="updDownload" disabled>
+          <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
+          下载并安装（演示）
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 视图：源码 ==================== -->
+<section class="section" id="code">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="sec-kicker reveal"><span>05</span> 源码</p>
+      <h2 class="reveal" style="--d:.04s">关键实现，原样摊开</h2>
+      <p class="sec-desc reveal" style="--d:.08s">四段核心代码：环境注入、UTF-8 分块边界、残留序列剥离、前端更新模块。</p>
+    </header>
+
+    <div class="code-shell reveal">
+      <div class="code-sidebar" role="tablist" aria-label="代码示例切换">
+        <button class="code-tab is-active" data-tab="exec" role="tab" aria-selected="true">
+          <span class="code-tab-idx">01</span>
+          <span class="code-tab-body"><strong>exec 环境注入</strong><small>SandboxPlugin.java</small></span>
+        </button>
+        <button class="code-tab" data-tab="utf8" role="tab" aria-selected="false">
+          <span class="code-tab-idx">02</span>
+          <span class="code-tab-body"><strong>UTF-8 分块边界</strong><small>SandboxPlugin.java</small></span>
+        </button>
+        <button class="code-tab" data-tab="ansi" role="tab" aria-selected="false">
+          <span class="code-tab-idx">03</span>
+          <span class="code-tab-body"><strong>残留序列剥离</strong><small>SandboxPlugin.java</small></span>
+        </button>
+        <button class="code-tab" data-tab="updater" role="tab" aria-selected="false">
+          <span class="code-tab-idx">04</span>
+          <span class="code-tab-body"><strong>镜像源更新</strong><small>public/app.js</small></span>
+        </button>
+        <div class="code-sidebar-foot">
+          <span class="lang-tag" id="codeLang">JAVA</span>
+          <span class="code-size" id="codeSize">—</span>
+        </div>
+      </div>
+
+      <div class="code-main">
+        <div class="code-head">
+          <div class="code-path">
+            <span class="path-dim" id="codeDir">apk-build/android/app/src/main/java/com/aichat/app/</span><span id="codePath">SandboxPlugin.java</span>
+          </div>
+          <button class="copy-btn" id="copyCode">
+            <svg class="ic" aria-hidden="true"><use href="#i-copy"/></svg>
+            <span>复制</span>
+          </button>
+        </div>
+        <pre class="code-view" id="codeView" tabindex="0"></pre>
+        <div class="code-foot">
+          <span>只读展示 · 与仓库 <code>main</code> 分支一致</span>
+          <a href="https://github.com/zhaohairuiour/ai-chat-app" target="_blank" rel="noopener" class="link-inline">
+            在 GitHub 查看 <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 视图：版本 ==================== -->
+<section class="section section-alt" id="versions">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="sec-kicker reveal"><span>06</span> 版本</p>
+      <h2 class="reveal" style="--d:.04s">最近四个版本，踩过的坑都在这里</h2>
+      <p class="sec-desc reveal" style="--d:.08s">每个版本对应一个 Release 附件，签名证书保持一致，可覆盖安装。</p>
+    </header>
+
+    <div class="timeline">
+      <article class="tl-item reveal">
+        <div class="tl-marker"><span class="tl-dot"></span><span class="tl-line"></span></div>
+        <div class="tl-body">
+          <div class="tl-meta"><time>2026-11-21</time><span class="tl-build">build 455</span></div>
+          <h3>v3.32.101 <span class="tl-badge">latest</span></h3>
+          <p>修复 <code>openclaw</code> 终端逐字竖排乱码；新增应用内镜像源更新，侧边栏加「检查更新」。</p>
+          <ul class="tl-points">
+            <li>TUI 命令强制 dumb 终端，关闭颜色与交互提示</li>
+            <li>UTF-8 分块边界保留，残留 CSI 二次剥离</li>
+            <li><code>version.json</code> 多镜像回退 + FileProvider 安装</li>
+          </ul>
+          <a class="tl-link" href="https://github.com/zhaohairuiour/ai-chat-app/releases/tag/v3.32.101" target="_blank" rel="noopener">
+            Release v3.32.101 <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="tl-item reveal" style="--d:.06s">
+        <div class="tl-marker"><span class="tl-dot"></span><span class="tl-line"></span></div>
+        <div class="tl-body">
+          <div class="tl-meta"><time>2026-11-21</time><span class="tl-build">build 454</span></div>
+          <h3>v3.32.100</h3>
+          <p>修掉终端就绪后残留的 <code>#term-progress</code> 进度条；侧边栏模型选择器打开时不再连带收回抽屉。</p>
+          <ul class="tl-points">
+            <li>终端状态机收尾与进度条清理</li>
+            <li>抽屉与模型面板的手势互斥</li>
+          </ul>
+          <a class="tl-link" href="https://github.com/zhaohairuiour/ai-chat-app/releases/tag/v3.32.100" target="_blank" rel="noopener">
+            Release v3.32.100 <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="tl-item reveal" style="--d:.12s">
+        <div class="tl-marker"><span class="tl-dot"></span><span class="tl-line"></span></div>
+        <div class="tl-body">
+          <div class="tl-meta"><time>2026-11-20</time><span class="tl-build">build 453</span></div>
+          <h3>v3.32.99</h3>
+          <p>用去密钥源码重编：本地加密密钥改为每台设备首次运行随机生成并持久化，旧数据读取后自动迁移。</p>
+          <ul class="tl-points">
+            <li>移除包内全部第三方 Key 与内网地址</li>
+            <li>设备级 AES 密钥替代硬编码常量</li>
+          </ul>
+          <a class="tl-link" href="https://github.com/zhaohairuiour/ai-chat-app/releases/tag/v3.32.99" target="_blank" rel="noopener">
+            Release v3.32.99 <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="tl-item reveal" style="--d:.18s">
+        <div class="tl-marker"><span class="tl-dot"></span></div>
+        <div class="tl-body">
+          <div class="tl-meta"><time>2026-11-19</time><span class="tl-build">archive</span></div>
+          <h3>v3.32.96</h3>
+          <p>发布链路补上 DEX 常量等长替换，历史包内嵌 Key 清理覆盖到原生层。</p>
+          <ul class="tl-points">
+            <li>APK 内 JS 与 DEX 双层扫描</li>
+            <li>重签后证书指纹与历史一致</li>
+          </ul>
+          <a class="tl-link" href="https://github.com/zhaohairuiour/ai-chat-app/releases/tag/v3.32.96" target="_blank" rel="noopener">
+            Release v3.32.96 <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
+          </a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 视图：问答 ==================== -->
+<section class="section" id="faq">
+  <div class="wrap faq-wrap">
+    <header class="sec-head">
+      <p class="sec-kicker reveal"><span>07</span> 问答</p>
+      <h2 class="reveal" style="--d:.04s">安装之前，你可能想问</h2>
+    </header>
+
+    <div class="faq-list">
+      <details class="faq-item reveal">
+        <summary>
+          <span>覆盖安装还是卸载重装？</span>
+          <span class="faq-plus" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-body">
+          <p>覆盖安装即可。所有 Release 使用同一张 Debug 证书签名，证书 SHA-256 为 <code>79186029…d9c5</code>，升级不会清空本地会话与文件。</p>
+        </div>
+      </details>
+      <details class="faq-item reveal" style="--d:.04s">
+        <summary>
+          <span>包里的模型 Key 是空的，还能用吗？</span>
+          <span class="faq-plus" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-body">
+          <p>公开仓库与附件不含任何明文密钥，直连在线模型会返回 401，这是预期行为。需要填入自己的 Key，后端通过环境变量注入，前端本地核心的 Key 常量留空待填。</p>
+        </div>
+      </details>
+      <details class="faq-item reveal" style="--d:.08s">
+        <summary>
+          <span>终端需要 Root 吗？</span>
+          <span class="faq-plus" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-body">
+          <p>不需要。Termux bootstrap 解包到应用私有目录，<code>targetSdk=24</code> 不受 W^X 限制，直接 exec <code>PREFIX/bin/bash</code> 即可，权限边界仍限制在应用沙箱内。</p>
+        </div>
+      </details>
+      <details class="faq-item reveal" style="--d:.12s">
+        <summary>
+          <span>支持哪些 Android 版本？</span>
+          <span class="faq-plus" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-body">
+          <p><code>minSdk 24</code>，即 Android 7.0 及以上；原生运行时按 arm64 打包，首次启动会解压约 46 MB 的 Node 二进制。</p>
+        </div>
+      </details>
+      <details class="faq-item reveal" style="--d:.16s">
+        <summary>
+          <span>镜像都挂了，更新还能成吗？</span>
+          <span class="faq-plus" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-body">
+          <p>清单与 APK 下载各有三级回退：<code>ghproxy.net</code> → <code>gh-proxy.com</code> → 直连。全部失败时只提示「更新检查失败」，不影响应用正常使用。</p>
+        </div>
+      </details>
+      <details class="faq-item reveal" style="--d:.2s">
+        <summary>
+          <span>为什么安装包有 265 MB？</span>
+          <span class="faq-plus" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-body">
+          <p>包里塞了完整的 Termux bootstrap、Node 运行时和 OpenClaw 依赖树，换来的是首次启动无需联网下载，断网也能开终端。</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 视图：下载 ==================== -->
+<section class="section download" id="download">
+  <div class="wrap">
+    <div class="download-card reveal">
+      <div class="download-copy">
+        <p class="sec-kicker"><span>08</span> 获取</p>
+        <h2>现在装进手机</h2>
+        <p class="download-desc">下载最新 Release 附件，覆盖安装即可。首次从旧版本升级需要手动安装一次，之后由应用内更新接管。</p>
+        <div class="download-actions">
+          <a class="btn btn-primary btn-lg" id="finalDownload"
+             href="https://github.com/zhaohairuiour/ai-chat-app/releases/latest" target="_blank" rel="noopener">
+            <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
+            下载 <span id="finalVer">v3.32.101</span>
+          </a>
+          <a class="btn btn-outline btn-lg" href="https://github.com/zhaohairuiour/ai-chat-app/releases" target="_blank" rel="noopener">
+            全部 Release
+            <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
+          </a>
+        </div>
+        <p class="download-note">APK 未内置任何第三方密钥；直连在线模型需自行配置。</p>
+      </div>
+      <div class="download-spec">
+        <div class="spec-row"><span>版本</span><strong id="specVersion">3.32.101</strong></div>
+        <div class="spec-row"><span>Build</span><strong id="specBuild">455</strong></div>
+        <div class="spec-row"><span>大小</span><strong>277,788,141 字节</strong></div>
+        <div class="spec-row"><span>签名</span><strong class="mono">79186029…d9c5</strong></div>
+        <div class="spec-row"><span>架构</span><strong>arm64-v8a</strong></div>
+        <div class="spec-row"><span>包名</span><strong class="mono">com.aichat.app</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ==================== 页脚 ==================== -->
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <span class="brand-mark small">
+        <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
+          <rect width="32" height="32" rx="9" fill="#101014"/>
+          <path d="M9 11l5 5-5 5" stroke="#4d6bfe" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 21h7" stroke="#ececef" stroke-width="2.4" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div>
+        <p class="footer-name">AI Chat</p>
+        <p class="footer-sub">Capacitor · Termux · OpenClaw</p>
+      </div>
+    </div>
+    <nav class="footer-links" aria-label="页脚链接">
+      <a href="https://github.com/zhaohairuiour/ai-chat-app" target="_blank" rel="noopener">源码仓库</a>
+      <a href="https://github.com/zhaohairuiour/ai-chat-app/releases" target="_blank" rel="noopener">Release</a>
+      <a href="https://raw.githubusercontent.com/zhaohairuiour/ai-chat-app/main/version.json" target="_blank" rel="noopener">version.json</a>
+    </nav>
+    <p class="footer-meta">静态站点 · GitHub Pages · 原生 JS，无框架无构建</p>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="回到顶部" title="回到顶部">
+  <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+    <circle class="ring-bg" cx="18" cy="18" r="16" />
+    <circle class="ring-fg" id="ringFg" cx="18" cy="18" r="16" />
+  </svg>
+  <svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>
+</button>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/main.js" defer></script>
+</body>
+</html>
