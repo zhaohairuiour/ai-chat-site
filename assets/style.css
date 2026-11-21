@@ -1904,8 +1904,9 @@ code { font-family: var(--mono); }
   .code-view .cc { white-space: pre-wrap; overflow-wrap: anywhere; padding-right: 12px; }
   .code-sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
   .code-tab { width: auto; }
+  .path-dim { display: none; }
   .code-foot > span { display: none; }
-  .code-foot { justify-content: flex-end; }
+  .code-foot { justify-content: flex-end; padding-right: 64px; }
   .timeline .tl-item { grid-template-columns: 22px 1fr; gap: 12px; }
   .download-card { padding: 24px 20px; }
   .download-actions .btn { flex: 1; }
