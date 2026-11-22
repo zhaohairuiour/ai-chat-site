@@ -21,7 +21,7 @@
 
   const REPO = 'zhaohairuiour/ai-chat-app';
   const BRANCH = 'main';
-  const APK_FALLBACK = `https://github.com/${REPO}/releases/download/v3.32.101/ai-chat-app-v3.32.101-nokeys.apk`;
+  const APK_FALLBACK = `https://github.com/${REPO}/releases/download/v3.32.102/ai-chat-app-v3.32.102-nokeys.apk`;
   const APK_MIRRORS = [
     { id: 'net', name: 'ghproxy.net', prefix: 'https://ghproxy.net/' },
     { id: 'com', name: 'gh-proxy.com', prefix: 'https://gh-proxy.com/' }
@@ -468,7 +468,7 @@
       [{ t: '  gateway      ', c: 't-dim' }, { t: 'local · ready', c: 't-ok' }],
       [{ t: '  channels     ', c: 't-dim' }, { t: 'web · telegram', c: '' }],
       [{ t: '  providers    ', c: 't-dim' }, { t: 'zhipu · poixe · openrouter · agnes', c: '' }],
-      [{ t: '  updater      ', c: 't-dim' }, { t: 'manifest v3.32.101 · mirror ok', c: 't-ok' }],
+      [{ t: '  updater      ', c: 't-dim' }, { t: 'manifest v3.32.102 · mirror ok', c: 't-ok' }],
       [{ t: '────────────────────────────────────────', c: 't-dim' }],
       [{ t: '  0 errors · 0 warnings · plain text', c: 't-ok' }]
     ];
