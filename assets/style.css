@@ -1685,6 +1685,72 @@ code { font-family: var(--mono); }
 /* ---------- 17. 下载 ---------- */
 .download { padding-bottom: 120px; }
 
+/* 双版本选择卡（v3.32.104 完整版 / 轻量版） */
+.ver-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.ver-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 26px 26px 24px;
+  border: 1px solid #2a3048;
+  border-radius: var(--radius-lg);
+  background: #0d0f18;
+}
+.ver-card.is-lite { border-color: var(--accent-line); }
+.ver-card.is-lite::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--accent);
+  opacity: .55;
+}
+.ver-tag {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 3px 9px;
+  margin-bottom: 14px;
+  border: 1px solid var(--accent-line);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: .06em;
+  background: var(--accent-soft);
+}
+.ver-card h3 {
+  font-size: 20px;
+  line-height: 1.35;
+  margin: 0 0 10px;
+  letter-spacing: -.01em;
+}
+.ver-desc {
+  margin: 0 0 16px;
+  color: var(--text-2);
+  font-size: 13.5px;
+  line-height: 1.78;
+}
+.ver-desc strong { color: #fff; font-weight: 600; }
+.ver-facts {
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+  color: var(--text-2);
+  font-size: 12.5px;
+  line-height: 1.9;
+}
+.ver-facts li::before {
+  content: "·";
+  color: var(--accent);
+  margin-right: 8px;
+}
+.ver-card .btn { margin-top: auto; align-self: flex-start; }
+
 .download-card {
   position: relative;
   display: grid;
@@ -2146,4 +2212,11 @@ body.dl-lock { overflow: hidden; }
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+@media (max-width: 860px) {
+  .ver-grid { grid-template-columns: 1fr; }
+  .ver-card .btn { align-self: stretch; justify-content: center; }
+  .download-actions { flex-direction: column; align-items: stretch; }
+  .download-actions .btn { flex: none; width: 100%; }
 }

@@ -12,7 +12,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b0b0e'/%3E%3Cpath d='M8 10l6 6-6 6' stroke='%234d6bfe' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M16 22h8' stroke='%23ececef' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="assets/icon.svg" />
-  <link rel="stylesheet" href="assets/style.css?v=1.1.1" />
+  <link rel="stylesheet" href="assets/style.css?v=1.2.0" />
 </head>
 <body>
 
@@ -64,19 +64,19 @@
       <a href="#code" class="nav-link" data-nav="code">源码</a>
       <a href="#versions" class="nav-link" data-nav="versions">版本</a>
       <a href="#faq" class="nav-link" data-nav="faq">问答</a>
-      <a href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.102/ai-chat-app-v3.32.102-nokeys.apk" class="nav-link nav-cta" data-dl-open aria-haspopup="dialog" target="_blank" rel="noopener">下载 APK</a>
+      <a href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.104/ai-chat-app-v3.32.104-full-nokeys.apk" class="nav-link nav-cta" data-dl-open aria-haspopup="dialog" target="_blank" rel="noopener">下载 APK</a>
     </nav>
 
     <div class="hdr-actions">
       <span class="ver-pill" id="verPill" title="当前最新版本">
-        <span class="ver-dot"></span><span id="verPillText">v3.32.102</span>
+        <span class="ver-dot"></span><span id="verPillText">v3.32.104</span>
       </span>
       <a class="btn btn-quiet hide-sm" href="https://github.com/zhaohairuiour/ai-chat-app" target="_blank" rel="noopener">
         GitHub
         <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
       </a>
       <a class="btn btn-primary hide-sm" id="hdrDownload" data-dl-open aria-haspopup="dialog"
-         href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.102/ai-chat-app-v3.32.102-nokeys.apk" target="_blank" rel="noopener">
+         href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.104/ai-chat-app-v3.32.104-full-nokeys.apk" target="_blank" rel="noopener">
         下载 APK
       </a>
       <button class="menu-btn" id="menuBtn" aria-label="打开导航" aria-expanded="false" aria-controls="nav">
@@ -103,15 +103,15 @@
         装进聊天框
       </h1>
       <p class="lede reveal" style="--d:.12s">
-        一个 265 MB 的安装包，里面装着 Termux 沙箱、Node.js 运行时与 OpenClaw 智能体。
-        聊天、终端、项目文件树、模型切换，全部在设备本地跑完。
+        完整版 265 MB，内置 Termux 沙箱、Node.js 运行时与 OpenClaw 智能体，断网可用；
+        轻量版仅 4 MB，运行环境首次使用时按需下载。聊天、终端、项目文件树、模型切换，全部在设备本地跑完。
       </p>
       <div class="hero-cta reveal" style="--d:.18s">
         <a class="btn btn-primary btn-lg" id="heroDownload" data-dl-open aria-haspopup="dialog"
-           href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.102/ai-chat-app-v3.32.102-nokeys.apk" target="_blank" rel="noopener">
+           href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.104/ai-chat-app-v3.32.104-full-nokeys.apk" target="_blank" rel="noopener">
           <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
           下载最新版
-          <span class="btn-tag" id="heroVer">v3.32.102</span>
+          <span class="btn-tag" id="heroVer">v3.32.104</span>
         </a>
         <a class="btn btn-outline btn-lg" href="https://github.com/zhaohairuiour/ai-chat-app" target="_blank" rel="noopener">
           浏览源码
@@ -119,7 +119,7 @@
         </a>
       </div>
       <dl class="hero-facts reveal" style="--d:.24s">
-        <div><dt>安装包</dt><dd>264.9 MB</dd></div>
+        <div><dt>安装包 · 完整 / 轻量</dt><dd>264.9 / 4.3 MB</dd></div>
         <div><dt>最低系统</dt><dd>Android 7.0</dd></div>
         <div><dt>明文密钥</dt><dd>0</dd></div>
       </dl>
@@ -133,7 +133,7 @@
           <div class="phone-screen">
             <div class="app-bar">
               <span class="app-brand"><i></i>AI Chat</span>
-              <span class="app-ver" id="phoneVer">3.32.102</span>
+              <span class="app-ver" id="phoneVer">3.32.104</span>
             </div>
             <div class="chat-stream">
               <div class="bubble user">openclaw 输出怎么是竖排乱码？</div>
@@ -166,7 +166,7 @@
   <div class="wrap">
     <div class="stat-strip reveal" style="--d:.3s">
       <div class="stat">
-        <span class="stat-num" data-count="455" data-plain="1">0</span>
+        <span class="stat-num" data-count="458" data-plain="1">0</span>
         <span class="stat-label">build 号</span>
       </div>
       <div class="stat">
@@ -415,7 +415,7 @@
       <p class="sec-kicker reveal"><span>04</span> 更新</p>
       <h2 class="reveal" style="--d:.04s">应用内更新，真的跑一遍给你看</h2>
       <p class="sec-desc reveal" style="--d:.08s">
-        下面这个面板会真实请求仓库根目录的 <code>version.json</code>，按 ghproxy.net → gh-proxy.com → 直连的顺序回退，再按 versionCode 比对。
+        下面这个面板会真实请求仓库根目录的 <code>version.json</code>，按 gh-proxy.com → ghproxy.net → 直连的顺序回退，再按 versionCode 比对。
       </p>
     </header>
 
@@ -432,7 +432,7 @@
             <select id="updCurrent">
               <option value="454">3.32.100 · build 454</option>
               <option value="455">3.32.101 · build 455</option>
-              <option value="456">3.32.102 · build 456</option>
+              <option value="456">3.32.104 · build 456</option>
             </select>
             <svg class="ic select-caret" aria-hidden="true"><use href="#i-chevron"/></svg>
           </div>
@@ -571,8 +571,26 @@
       <article class="tl-item reveal">
         <div class="tl-marker"><span class="tl-dot"></span><span class="tl-line"></span></div>
         <div class="tl-body">
+          <div class="tl-meta"><time>2026-11-28</time><span class="tl-build">build 458</span></div>
+          <h3>v3.32.104 <span class="tl-badge">latest</span></h3>
+          <p>拆成完整版与轻量版：轻量版只留 4 MB 壳，运行环境首次使用按需下载；同时完成一轮性能优化。</p>
+          <ul class="tl-points">
+            <li>完整版内置 bootstrap + OpenClaw，断网可用；轻量版按需拉取 29 MB / 240 MB</li>
+            <li>运行环境走 Release + 双镜像，支持断点续传与 SHA-256 校验</li>
+            <li>流式渲染按长度自适应节流，终端回显改为写入唤醒</li>
+            <li>高亮脚本异步加载，首屏约快 60 ms；历史会话批量挂载</li>
+          </ul>
+          <a class="tl-link" href="https://github.com/zhaohairuiour/ai-chat-app/releases/tag/v3.32.104" target="_blank" rel="noopener">
+            Release v3.32.104 <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
+          </a>
+        </div>
+      </article>
+
+      <article class="tl-item reveal">
+        <div class="tl-marker"><span class="tl-dot"></span><span class="tl-line"></span></div>
+        <div class="tl-body">
           <div class="tl-meta"><time>2026-11-22</time><span class="tl-build">build 456</span></div>
-          <h3>v3.32.102 <span class="tl-badge">latest</span></h3>
+          <h3>v3.32.102</h3>
           <p>修复自动执行失效、重试重复写入、串流切会话错写、停止被 fallback 吞掉、启动覆盖备份等 13 项缺陷。</p>
           <ul class="tl-points">
             <li>自动执行仅对本次新回复生效，历史消息不重放命令</li>
@@ -635,21 +653,6 @@
         </div>
       </article>
 
-      <article class="tl-item reveal" style="--d:.18s">
-        <div class="tl-marker"><span class="tl-dot"></span></div>
-        <div class="tl-body">
-          <div class="tl-meta"><time>2026-11-19</time><span class="tl-build">archive</span></div>
-          <h3>v3.32.96</h3>
-          <p>发布链路补上 DEX 常量等长替换，历史包内嵌 Key 清理覆盖到原生层。</p>
-          <ul class="tl-points">
-            <li>APK 内 JS 与 DEX 双层扫描</li>
-            <li>重签后证书指纹与历史一致</li>
-          </ul>
-          <a class="tl-link" href="https://github.com/zhaohairuiour/ai-chat-app/releases/tag/v3.32.96" target="_blank" rel="noopener">
-            Release v3.32.96 <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
-          </a>
-        </div>
-      </article>
     </div>
   </div>
 </section>
@@ -705,16 +708,16 @@
           <span class="faq-plus" aria-hidden="true"></span>
         </summary>
         <div class="faq-body">
-          <p>清单与 APK 下载各有三级回退：<code>ghproxy.net</code> → <code>gh-proxy.com</code> → 直连。本站下载只提供前两个镜像，不暴露 GitHub 直链。全部失败时只提示「更新检查失败」，不影响应用正常使用。</p>
+          <p>清单与 APK 下载各有三级回退：<code>gh-proxy.com</code> → <code>ghproxy.net</code> → 直连。本站下载只提供前两个镜像，不暴露 GitHub 直链。全部失败时只提示「更新检查失败」，不影响应用正常使用。</p>
         </div>
       </details>
       <details class="faq-item reveal" style="--d:.2s">
         <summary>
-          <span>为什么安装包有 265 MB？</span>
+          <span>完整版和轻量版怎么选？</span>
           <span class="faq-plus" aria-hidden="true"></span>
         </summary>
         <div class="faq-body">
-          <p>包里塞了完整的 Termux bootstrap、Node 运行时和 OpenClaw 依赖树，换来的是首次启动无需联网下载，断网也能开终端。</p>
+          <p>完整版把 Termux bootstrap、Node 运行时和 OpenClaw 依赖树都放进 APK，约 264 MB，装完即可断网使用。轻量版只装应用本体，约 4 MB：首次打开终端联网下载约 29 MB，首次使用 OpenClaw 再下载约 240 MB，之后同样可离线。两个版本签名一致，可互相覆盖安装且保留数据。</p>
         </div>
       </details>
     </div>
@@ -724,28 +727,63 @@
 <!-- ==================== 视图：下载 ==================== -->
 <section class="section download" id="download">
   <div class="wrap">
+    <div class="ver-grid reveal">
+      <article class="ver-card is-full">
+        <p class="ver-tag">完整版 · 离线可用</p>
+        <h3>装完即用，断网也能开终端</h3>
+        <p class="ver-desc">内置 Termux bootstrap 与 OpenClaw 运行时，不需要首次下载，适合经常离线或不想等下载的场景。</p>
+        <ul class="ver-facts">
+          <li>安装包约 264 MB</li>
+          <li>终端 / Agent 首次使用零下载</li>
+          <li>与轻量版同签名，可互相覆盖</li>
+        </ul>
+        <a class="btn btn-primary" data-dl-open="full" aria-haspopup="dialog"
+           href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.104/ai-chat-app-v3.32.104-full-nokeys.apk" target="_blank" rel="noopener">
+          <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
+          下载完整版
+        </a>
+      </article>
+
+      <article class="ver-card is-lite">
+        <p class="ver-tag">轻量版 · 首次需联网</p>
+        <h3>4 MB 的壳，运行环境用到了再拉</h3>
+        <p class="ver-desc">安装包只保留应用本体。首次打开终端需联网下载约 29 MB bootstrap；首次使用 OpenClaw 再下载约 240 MB 运行时。<strong>下载完成前不可断网使用</strong>，下载后同样可以离线。</p>
+        <ul class="ver-facts">
+          <li>安装包约 4.3 MB</li>
+          <li>首次使用必须联网，支持断点续传</li>
+          <li>适合先试功能、流量敏感的用户</li>
+        </ul>
+        <a class="btn btn-outline" data-dl-open="lite" aria-haspopup="dialog"
+           href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.104/ai-chat-app-v3.32.104-lite-nokeys.apk" target="_blank" rel="noopener">
+          <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
+          下载轻量版
+        </a>
+      </article>
+    </div>
+
     <div class="download-card reveal">
       <div class="download-copy">
         <p class="sec-kicker"><span>08</span> 获取</p>
         <h2>现在装进手机</h2>
-        <p class="download-desc">经镜像下载最新 Release 附件，覆盖安装即可。首次从旧版本升级需要手动安装一次，之后由应用内更新接管。</p>
+        <p class="download-desc">两个版本共用同一包名与签名，可互相覆盖安装（数据保留）。首次从旧版本升级需手动装一次，之后由应用内更新按当前变体接管。</p>
         <div class="download-actions">
           <a class="btn btn-primary btn-lg" id="finalDownload" data-dl-open aria-haspopup="dialog"
-             href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.102/ai-chat-app-v3.32.102-nokeys.apk" target="_blank" rel="noopener">
+             href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.104/ai-chat-app-v3.32.104-full-nokeys.apk" target="_blank" rel="noopener">
             <svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>
-            下载 <span id="finalVer">v3.32.102</span>
+            下载完整版 <span id="finalVer">v3.32.104</span>
           </a>
           <a class="btn btn-outline btn-lg" href="https://github.com/zhaohairuiour/ai-chat-app/releases" target="_blank" rel="noopener">
             全部 Release
             <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg>
           </a>
         </div>
-        <p class="download-note">下载走 ghproxy.net / gh-proxy.com 双镜像，不使用 GitHub 原站直链。APK 未内置第三方密钥。</p>
+        <p class="download-note">下载走 gh-proxy.com / ghproxy.net 双镜像，不使用 GitHub 原站直链。轻量版首次拉取运行环境时按 <code>gh-proxy.com</code> → 直连 → <code>ghproxy.net</code> 顺序回退。</p>
       </div>
       <div class="download-spec">
-        <div class="spec-row"><span>版本</span><strong id="specVersion">3.32.102</strong></div>
-        <div class="spec-row"><span>Build</span><strong id="specBuild">455</strong></div>
-        <div class="spec-row"><span>大小</span><strong>277,788,141 字节</strong></div>
+        <div class="spec-row"><span>版本</span><strong id="specVersion">3.32.104</strong></div>
+        <div class="spec-row"><span>Build</span><strong id="specBuild">458</strong></div>
+        <div class="spec-row"><span>完整版</span><strong id="specSize">276,387,595 字节</strong></div>
+        <div class="spec-row"><span>轻量版</span><strong id="specSizeLite">4,470,390 字节</strong></div>
         <div class="spec-row"><span>签名</span><strong class="mono">79186029…d9c5</strong></div>
         <div class="spec-row"><span>架构</span><strong>arm64-v8a</strong></div>
         <div class="spec-row"><span>包名</span><strong class="mono">com.aichat.app</strong></div>
@@ -777,7 +815,7 @@
       <a href="https://raw.githubusercontent.com/zhaohairuiour/ai-chat-app/main/version.json" target="_blank" rel="noopener">version.json</a>
       <a href="https://github.com/zhaohairuiour/ai-chat-site" target="_blank" rel="noopener">本站源码</a>
     </nav>
-    <p class="footer-meta">静态站点 v1.1.1 · GitHub Pages · 原生 JS，无框架无构建</p>
+    <p class="footer-meta">静态站点 v1.2.0 · GitHub Pages · 原生 JS，无框架无构建</p>
   </div>
 </footer>
 
@@ -798,41 +836,41 @@
       <svg class="ic" aria-hidden="true"><use href="#i-close"/></svg>
     </button>
 
-    <p class="dl-modal-kicker">APK · arm64-v8a · 277,788,141 字节</p>
+    <p class="dl-modal-kicker" id="dlKicker">完整版 · APK · arm64-v8a · 276,387,595 字节</p>
     <h3 id="dlTitle">选择下载镜像</h3>
     <p class="dl-modal-desc" id="dlDesc">两个地址指向同一个 Release 附件，均走 GitHub 镜像，不经过 GitHub 原站。哪个快用哪个。</p>
 
     <div class="dl-mirrors">
-      <a class="dl-mirror is-primary" data-dl-mirror="net" data-dl-name="ghproxy.net"
-         href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.102/ai-chat-app-v3.32.102-nokeys.apk" target="_blank" rel="noopener">
+      <a class="dl-mirror is-primary" data-dl-mirror="com" data-dl-name="gh-proxy.com"
+         href="https://gh-proxy.com/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.104/ai-chat-app-v3.32.104-full-nokeys.apk" target="_blank" rel="noopener">
         <span class="dl-mirror-head">
-          <strong>ghproxy.net</strong>
+          <strong>gh-proxy.com</strong>
           <span class="dl-mirror-tag">主镜像</span>
         </span>
-        <span class="dl-mirror-sub">ghproxy.net/https://github.com/…-nokeys.apk</span>
+        <span class="dl-mirror-sub" id="dlSubCom">gh-proxy.com/https://github.com/…-nokeys.apk</span>
         <span class="dl-mirror-foot">
-          通过 ghproxy.net 下载
+          通过 gh-proxy.com 下载
           <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg>
         </span>
       </a>
 
-      <a class="dl-mirror" data-dl-mirror="com" data-dl-name="gh-proxy.com"
-         href="https://gh-proxy.com/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.102/ai-chat-app-v3.32.102-nokeys.apk" target="_blank" rel="noopener">
+      <a class="dl-mirror" data-dl-mirror="net" data-dl-name="ghproxy.net"
+         href="https://ghproxy.net/https://github.com/zhaohairuiour/ai-chat-app/releases/download/v3.32.104/ai-chat-app-v3.32.104-full-nokeys.apk" target="_blank" rel="noopener">
         <span class="dl-mirror-head">
-          <strong>gh-proxy.com</strong>
+          <strong>ghproxy.net</strong>
           <span class="dl-mirror-tag">备用</span>
         </span>
-        <span class="dl-mirror-sub">gh-proxy.com/https://github.com/…-nokeys.apk</span>
+        <span class="dl-mirror-sub" id="dlSubNet">ghproxy.net/https://github.com/…-nokeys.apk</span>
         <span class="dl-mirror-foot">
-          通过 gh-proxy.com 下载
+          通过 ghproxy.net 下载
           <svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg>
         </span>
       </a>
     </div>
 
     <div class="dl-modal-meta">
-      <span>版本 v<span id="dlVer">3.32.102</span></span>
-      <span>build <span id="dlBuild">455</span></span>
+      <span>版本 v<span id="dlVer">3.32.104</span></span>
+      <span>build <span id="dlBuild">458</span></span>
       <span>targetSdk 24 · arm64-v8a</span>
     </div>
     <p class="dl-modal-note">若一个镜像超时或返回 5xx，直接关闭弹窗换另一个重试。APK 未内置任何第三方密钥。</p>
@@ -841,6 +879,6 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="assets/main.js?v=1.1.1" defer></script>
+<script src="assets/main.js?v=1.2.0" defer></script>
 </body>
 </html>

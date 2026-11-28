@@ -21,15 +21,20 @@
 
   const REPO = 'zhaohairuiour/ai-chat-app';
   const BRANCH = 'main';
-  const APK_FALLBACK = `https://github.com/${REPO}/releases/download/v3.32.102/ai-chat-app-v3.32.102-nokeys.apk`;
+  const APK_FALLBACK = `https://github.com/${REPO}/releases/download/v3.32.104/ai-chat-app-v3.32.104-full-nokeys.apk`;
+  const APK_FALLBACK_LITE = `https://github.com/${REPO}/releases/download/v3.32.104/ai-chat-app-v3.32.104-lite-nokeys.apk`;
   const APK_MIRRORS = [
-    { id: 'net', name: 'ghproxy.net', prefix: 'https://ghproxy.net/' },
-    { id: 'com', name: 'gh-proxy.com', prefix: 'https://gh-proxy.com/' }
+    { id: 'com', name: 'gh-proxy.com', prefix: 'https://gh-proxy.com/' },
+    { id: 'net', name: 'ghproxy.net', prefix: 'https://ghproxy.net/' }
   ];
   let apkTarget = APK_FALLBACK;
+  let apkTargetLite = APK_FALLBACK_LITE;
+  let apkSizeFull = 276387595;
+  let apkSizeLite = 4470390;
+  let dlVariant = 'full';
   const MANIFEST_MIRRORS = [
-    `https://ghproxy.net/https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`,
     `https://gh-proxy.com/https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`,
+    `https://ghproxy.net/https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`,
     `https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`
   ];
 
@@ -1134,7 +1139,14 @@ pb.environment().put("TERM", "xterm-256color");`
       if (dlBuild) dlBuild.textContent = code;
     }
 
-    if (manifest.apkUrl) setApkTarget(String(manifest.apkUrl));
+    if (manifest.apkUrl) setApkTarget(String(manifest.apkUrl), manifest.apkUrlLite ? String(manifest.apkUrlLite) : null);
+    if (Number(manifest.apkSize) > 0) apkSizeFull = Number(manifest.apkSize);
+    if (Number(manifest.apkSizeLite) > 0) apkSizeLite = Number(manifest.apkSizeLite);
+    const specSize = $('#specSize');
+    if (specSize) specSize.textContent = `${fmtBytes(apkSizeFull)} 字节`;
+    const specSizeLite = $('#specSizeLite');
+    if (specSizeLite) specSizeLite.textContent = `${fmtBytes(apkSizeLite)} 字节`;
+    applyDlVariant(dlVariant);
 
     if (updCurrent && code) {
       const exists = Array.from(updCurrent.options).some((o) => Number(o.value) === Number(code));
@@ -1501,21 +1513,51 @@ async function checkAppUpdate(silent) {
   });
 
   /* ---------- 18. 镜像下载弹窗 ---------- */
-  function mirrorHref(prefix, target = apkTarget) {
+  function mirrorHref(prefix, target) {
     return target ? `${prefix}${target}` : '#';
   }
 
-  function setApkTarget(url) {
-    if (!url || !/^https:\/\/github\.com\/\S+\/releases\/download\/\S+\.apk$/i.test(url)) return;
-    apkTarget = url;
+  function fmtBytes(n) {
+    return Number(n || 0).toLocaleString('en-US');
+  }
+
+  function variantTarget(variant = dlVariant) {
+    return variant === 'lite' ? apkTargetLite : apkTarget;
+  }
+
+  function applyDlVariant(variant = 'full') {
+    dlVariant = variant === 'lite' ? 'lite' : 'full';
+    const target = variantTarget();
 
     $$('[data-dl-mirror]').forEach((link) => {
       const mirror = APK_MIRRORS.find((m) => m.id === link.dataset.dlMirror);
-      if (mirror) link.href = mirrorHref(mirror.prefix);
+      if (mirror) link.href = mirrorHref(mirror.prefix, target);
     });
     $$('[data-dl-open]').forEach((link) => {
-      link.href = mirrorHref(APK_MIRRORS[0].prefix);
+      const v = link.dataset.dlOpen === 'lite' ? 'lite' : 'full';
+      link.href = mirrorHref(APK_MIRRORS[0].prefix, variantTarget(v));
     });
+
+    const kicker = $('#dlKicker');
+    const desc = $('#dlDesc');
+    const sizeLabel = dlVariant === 'lite' ? `${fmtBytes(apkSizeLite)} 字节（约 4.3 MB）` : `${fmtBytes(apkSizeFull)} 字节（约 264 MB）`;
+    if (kicker) kicker.textContent = `${dlVariant === 'lite' ? '轻量版' : '完整版'} · APK · arm64-v8a · ${sizeLabel}`;
+    if (desc) {
+      desc.textContent = dlVariant === 'lite'
+        ? '安装包只含应用本体。首次打开终端需联网下载约 29 MB，首次使用 OpenClaw 再下载约 240 MB，下载完成前无法断网使用；下载后同样可离线。两个版本签名一致，可互相覆盖安装。'
+        : '两个地址指向同一个 Release 附件，均走 GitHub 镜像，不经过 GitHub 原站。哪个快用哪个。';
+    }
+    const subNet = $('#dlSubNet');
+    const subCom = $('#dlSubCom');
+    if (subNet) subNet.textContent = target ? `ghproxy.net/…/${target.split('/').pop()}` : 'ghproxy.net/…';
+    if (subCom) subCom.textContent = target ? `gh-proxy.com/…/${target.split('/').pop()}` : 'gh-proxy.com/…';
+  }
+
+  function setApkTarget(url, liteUrl) {
+    const ok = (u) => u && /^https:\/\/github\.com\/\S+\/releases\/download\/\S+\.apk$/i.test(u);
+    if (ok(url)) apkTarget = url;
+    if (ok(liteUrl)) apkTargetLite = liteUrl;
+    applyDlVariant(dlVariant);
   }
 
   const dlModal = $('#dlModal');
@@ -1524,6 +1566,7 @@ async function checkAppUpdate(silent) {
 
   function openDlModal(opener) {
     if (!dlModal) return;
+    applyDlVariant(opener?.dataset?.dlOpen === 'lite' ? 'lite' : 'full');
     dlLastFocus = opener || document.activeElement;
     dlModal.classList.add('is-open');
     dlModal.setAttribute('aria-hidden', 'false');
@@ -1578,6 +1621,8 @@ async function checkAppUpdate(silent) {
       first.focus();
     }
   });
+
+  applyDlVariant('full');
 
   $$('[data-dl-mirror]').forEach((link) => {
     link.addEventListener('click', () => {
