@@ -21,16 +21,16 @@
 
   const REPO = 'zhaohairuiour/ai-chat-app';
   const BRANCH = 'main';
-  const APK_FALLBACK = `https://github.com/${REPO}/releases/download/v3.32.105/ai-chat-app-v3.32.105-full-nokeys.apk`;
-  const APK_FALLBACK_LITE = `https://github.com/${REPO}/releases/download/v3.32.105/ai-chat-app-v3.32.105-lite-nokeys.apk`;
+  const APK_FALLBACK = `https://github.com/${REPO}/releases/download/v3.32.106/ai-chat-app-v3.32.106-full-nokeys.apk`;
+  const APK_FALLBACK_LITE = `https://github.com/${REPO}/releases/download/v3.32.106/ai-chat-app-v3.32.106-lite-nokeys.apk`;
   const APK_MIRRORS = [
     { id: 'com', name: 'gh-proxy.com', prefix: 'https://gh-proxy.com/' },
     { id: 'net', name: 'ghproxy.net', prefix: 'https://ghproxy.net/' }
   ];
   let apkTarget = APK_FALLBACK;
   let apkTargetLite = APK_FALLBACK_LITE;
-  let apkSizeFull = 276387595;
-  let apkSizeLite = 4474486;
+  let apkSizeFull = 276371211;
+  let apkSizeLite = 4454006;
   let dlVariant = 'full';
   const MANIFEST_MIRRORS = [
     `https://gh-proxy.com/https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`,
