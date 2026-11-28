@@ -21,8 +21,8 @@
 
   const REPO = 'zhaohairuiour/ai-chat-app';
   const BRANCH = 'main';
-  const APK_FALLBACK = `https://github.com/${REPO}/releases/download/v3.32.104/ai-chat-app-v3.32.104-full-nokeys.apk`;
-  const APK_FALLBACK_LITE = `https://github.com/${REPO}/releases/download/v3.32.104/ai-chat-app-v3.32.104-lite-nokeys.apk`;
+  const APK_FALLBACK = `https://github.com/${REPO}/releases/download/v3.32.105/ai-chat-app-v3.32.105-full-nokeys.apk`;
+  const APK_FALLBACK_LITE = `https://github.com/${REPO}/releases/download/v3.32.105/ai-chat-app-v3.32.105-lite-nokeys.apk`;
   const APK_MIRRORS = [
     { id: 'com', name: 'gh-proxy.com', prefix: 'https://gh-proxy.com/' },
     { id: 'net', name: 'ghproxy.net', prefix: 'https://ghproxy.net/' }
@@ -30,13 +30,15 @@
   let apkTarget = APK_FALLBACK;
   let apkTargetLite = APK_FALLBACK_LITE;
   let apkSizeFull = 276387595;
-  let apkSizeLite = 4470390;
+  let apkSizeLite = 4474486;
   let dlVariant = 'full';
   const MANIFEST_MIRRORS = [
     `https://gh-proxy.com/https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`,
     `https://ghproxy.net/https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`,
     `https://raw.githubusercontent.com/${REPO}/${BRANCH}/version.json`
   ];
+  // GitHub raw 的 CDN 会缓存 version.json，加时间戳保证每次拿到最新清单
+  const freshUrl = (url) => url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
 
   /* ---------- 1. Toast ---------- */
   const toastEl = $('#toast');
@@ -1004,7 +1006,7 @@ pb.environment().put("TERM", "xterm-256color");`
       const t0 = performance.now();
 
       try {
-        const data = await fetchJson(MANIFEST_MIRRORS[i], 9000);
+        const data = await fetchJson(freshUrl(MANIFEST_MIRRORS[i]), 9000);
         const ms = Math.round(performance.now() - t0);
         if (!data || !data.apkUrl) throw new Error('清单缺少 apkUrl');
         manifest = data;
@@ -1162,7 +1164,7 @@ pb.environment().put("TERM", "xterm-256color");`
   (async () => {
     for (const url of MANIFEST_MIRRORS) {
       try {
-        const data = await fetchJson(url, 8000);
+        const data = await fetchJson(freshUrl(url), 8000);
         if (data && data.apkUrl) {
           applyLiveVersion(data);
           if (jsonView && !currentManifest) renderJson(data);

@@ -2214,8 +2214,58 @@ body.dl-lock { overflow: hidden; }
   border-radius: 4px;
 }
 
+
+/* 免责声明与使用条款 */
+.legal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.legal-card {
+  padding: 28px 28px 24px;
+  border: 1px solid #2a3048;
+  border-radius: var(--radius-lg);
+  background: #0d0f18;
+}
+.legal-card h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  letter-spacing: -.01em;
+}
+.legal-list {
+  margin: 0;
+  padding: 0 0 0 2px;
+  list-style: none;
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.9;
+}
+.legal-list li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 12px;
+}
+.legal-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: .8;
+}
+.legal-list strong { color: #ececef; font-weight: 600; }
+.legal-foot {
+  margin-top: 18px;
+  color: #8a8a96;
+  font-size: 12px;
+}
+
 @media (max-width: 860px) {
   .ver-grid { grid-template-columns: 1fr; }
+  .legal-grid { grid-template-columns: 1fr; }
   .ver-card .btn { align-self: stretch; justify-content: center; }
   .download-actions { flex-direction: column; align-items: stretch; }
   .download-actions .btn { flex: none; width: 100%; }
